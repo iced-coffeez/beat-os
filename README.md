@@ -1,6 +1,6 @@
 # Welcome to beat!os
 This is an open-source 64-bit (x86_64) operating system created by me! (i used chatgpt for reference.)
-Also, NO. It cannot run DOOM (in its current state) so I'm sorry.
+Also, it MAY be able to run DOOM (if someone ported it properly).
 # Building Prerequisites
 Make
 ncurses (on debian the package is libncurses-dev)

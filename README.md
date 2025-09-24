@@ -8,6 +8,7 @@ Docker
 Qemu (you can install that in the docker, or on your main machine.)
 # 
 Linux or a Unix-like system is preferrred.
+# 
 # Building:
 1) Run start.sh as sudo.
 `sudo ./start.sh`

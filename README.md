@@ -5,7 +5,8 @@ Also, it MAY be able to run DOOM (if someone ported it properly).
 Make
 ncurses (on debian the package is libncurses-dev)
 Docker
-Qemu (you can install that in the docker, or on your main machine.)
+Qemu, or any other virtualization service (MAKE SURE ITS SET TO x64 OTHER IN VIRTUALBOX, AND OTHER SOFTWARE LIKE VMWARE.)
+(you can install these in the docker, or on your main machine.)
 Linux is heavily preferred over any other operating system/kernel. Unix-like systems are mildly preferred.
 # Building:
 1) Run start.sh as sudo.

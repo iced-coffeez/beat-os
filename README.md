@@ -2,12 +2,11 @@
 This is an open-source 64-bit (x86_64) operating system created by me! (i used chatgpt for reference.)
 Also, it MAY be able to run DOOM (if someone ported it properly).
 # Building Prerequisites
-Make
-ncurses (on debian the package is libncurses-dev)
-Docker
-Qemu, or any other virtualization service (MAKE SURE ITS SET TO x64 OTHER IN VIRTUALBOX, AND OTHER SOFTWARE LIKE VMWARE.)
-(you can install these in the docker, or on your main machine.)
-Linux is heavily preferred over any other operating system/kernel. Unix-like systems are mildly preferred.
+1) Make
+2) ncurses (on debian the package is libncurses-dev)
+3) Docker
+4) Qemu, or any other virtualization service (MAKE SURE ITS SET TO x64 OTHER IN VIRTUALBOX, AND OTHER SOFTWARE LIKE VMWARE.) (you can install these in the docker, or on your main machine.)
+5) Linux is heavily preferred over any other operating system/kernel. Unix-like systems are mildly preferred.
 # Building:
 1) Run start.sh as sudo.
 `sudo ./start.sh`

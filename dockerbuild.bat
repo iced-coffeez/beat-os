@@ -1,1 +1,1 @@
-docker build beatenv -t beat-buildenv
+docker build buildenv -t beat-buildenv

@@ -17,7 +17,7 @@ sudo make x86_64 -j 8
 ```
 # Cloning (on Windows)
 ```
-:: OTHER METHODS ARE RECOMMENDED OVER THIS!
+:: OTHER METHODS ARE RECOMMENDED OVER THIS! (ALSO: INSTALL DOCKER BEFORE RUNNING)
 git clone https://github.com/iced-coffeez/beat-os.git
 cd beat-os
 dockerbuild.bat

@@ -82,7 +82,7 @@ void parse_command2(char *input, char **cmd, char **arg1, char **arg2) {
 
 void ident_drv() {
     beatfs_init(0);                       // init filesystem (master drive)
-    beatfs_create("hello.txt", 512);      // create
+    beatfs_create("hello.txt");      // create
     beatfs_remove("hello.txt");           // delete
     beatfs_list();                        // should show <empty>    
 }
@@ -115,17 +115,6 @@ void handle_modifier(uint8_t scancode) {
             shift_pressed = false;
             break;
         // add Ctrl/Alt here if desired
-    }
-}
-
-void prompt_size(char** name, uint32_t **size) {
-    print("Name: ");
-    reset_cmd();
-    name = LASTCMD;
-    print("Size: ");
-    reset_cmd();
-    if (to_uint32(LASTCMD, size)) {
-        beatfs_create(name, size);
     }
 }
 

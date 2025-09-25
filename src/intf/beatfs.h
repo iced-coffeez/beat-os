@@ -29,7 +29,7 @@ typedef struct {
 
 /* API */
 void        beatfs_init(uint8_t ata_drive); /* init superblock (in-memory) and set drive */
-int         beatfs_create(const char *name, uint32_t size); /* alloc metadata and flush */
+int         beatfs_create(const char *name); /* alloc metadata and flush */
 int         beatfs_write_file(const char *name, const void *buffer, uint32_t size); /* write file data */
 int         beatfs_read_file(const char *name, void *out, uint32_t max_size); /* read data */
 int         beatfs_remove(const char *name);

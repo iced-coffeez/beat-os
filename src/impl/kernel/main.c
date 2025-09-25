@@ -8,7 +8,7 @@
 #include <lua.h>
 
 void halt(char* reason) {
-    print("Halted System! Reason: ");
+    print("Halted System! Error Code: ");
     print(reason);
     print_char('\n');
     __asm__ volatile("cli");
@@ -131,12 +131,8 @@ void prompt_size(char** name, uint32_t **size) {
 
 void checkcommand(char* ascii) {
     char *cmd;
-    char *cmd2;
-    char *arg2;
-    char *arg1;
     char *arg;
     parse_command(ascii, &cmd, &arg);
-    parse_command2(ascii, &cmd2, &arg1, &arg2);
 
     if (strcmp_custom(ascii, "halt")) {
         halt("User Request.");
@@ -151,13 +147,16 @@ void checkcommand(char* ascii) {
         print("clear - clears the screen\n");
         print("halt - causes a system halt\n");
         print("reinit - recalls the kernel script\n");
-        print("probe - creates file with name\n");
+        print("probe [name] - creates file with name\n");
         print("echo [text] - prints text to screen\n");
         print("ldc - lists drive contents");
     }
     if (strcmp_custom(ascii, "reinit")) {
         reset_cmd();
         kernel_main();
+    }
+    if (strcmp_custom(ascii, "ldc")) {
+        beatfs_list();
     }
     if (strcmp_custom(ascii, "unalive")) {
         alive = false;
@@ -171,14 +170,7 @@ void checkcommand(char* ascii) {
         }
     }
     else if (strcmp_custom(cmd, "probe")) {
-        uint32_t num;
-        if (arg) {
-            if (to_uint32(arg2, &num)) {
-                beatfs_create(arg1, num);
-            } else {
-                print("probe syntax: probe [name] [size]");
-            }
-        }
+        beatfs_create(arg);
     }
     else if (strcmp_custom(cmd, "\n")) {
         return 1;

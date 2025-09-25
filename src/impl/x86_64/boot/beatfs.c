@@ -225,54 +225,68 @@ static void beatfs_flush(void) {
 }
 
 /* create file metadata (alloc contiguous sectors) */
-int beatfs_create(const char *name, uint32_t size) {
-    if (sb.file_count >= BEATFS_MAX_FILES) { print("beat!fs: no metadata slots\n"); return -1; }
-    /* find next free LBA after last file */
-    uint32_t base = 2; /* first data LBA */
-    for (uint32_t i = 0; i < sb.file_count; ++i) {
-        uint32_t end = sb.files[i].start_lba + sb.files[i].blocks;
-        if (end > base) base = end;
+int beatfs_create(const char *name) {
+    if (sb.file_count >= BEATFS_MAX_FILES) { 
+        print("beat!fs: no metadata slots\n"); 
+        return -1; 
     }
-    uint32_t blocks = (size + BEATFS_SECTOR_SZ - 1) / BEATFS_SECTOR_SZ;
-    if (blocks == 0) blocks = 1;
 
     BeatFS_File *f = &sb.files[sb.file_count];
     str_copy(f->name, name, BEATFS_MAX_NAME);
-    f->size = size;
-    f->start_lba = base;
-    f->blocks = blocks;
+    f->size = 0;
+    f->start_lba = 0;  // allocated lazily
+    f->blocks = 0;
 
     sb.file_count++;
     beatfs_flush();
-    print("beat!fs: created ");
+
+    print("beat!fs: created empty file \"");
     print(f->name);
-    print(" at LBA ");
-    print_u32(f->start_lba);
-    print(" (");
-    print_u32(f->blocks);
-    print(" blocks)\n");
+    print("\"\n");
+
     return 0;
 }
 
-/* write file contents (must fit allocated space) */
+
 int beatfs_write_file(const char *name, const void *buffer, uint32_t size) {
     for (uint32_t i = 0; i < sb.file_count; ++i) {
         BeatFS_File *f = &sb.files[i];
         if (str_eq(f->name, name)) {
-            if (size > f->blocks * BEATFS_SECTOR_SZ) { print("beat!fs: write too large\n"); return -1; }
-            /* write blocks */
-            if (!ata_write_sectors(ata_drive_selected, f->start_lba, buffer, f->blocks)) {
-                print("beat!fs: write failed\n"); return -1;
+            uint32_t needed_blocks = (size + BEATFS_SECTOR_SZ - 1) / BEATFS_SECTOR_SZ;
+
+            /* allocate if needed */
+            if (needed_blocks > f->blocks) {
+                uint32_t base = 2;
+                for (uint32_t j = 0; j < sb.file_count; ++j) {
+                    uint32_t end = sb.files[j].start_lba + sb.files[j].blocks;
+                    if (end > base) base = end;
+                }
+
+                f->start_lba = base;
+                f->blocks = needed_blocks;
             }
+
+            if (!ata_write_sectors(ata_drive_selected, f->start_lba, buffer, f->blocks)) {
+                print("beat!fs: write failed\n");
+                return -1;
+            }
+
+            f->size = size; // update size to actual bytes written
+            beatfs_flush();
+
             print("beat!fs: wrote ");
+            print_u32(size);
+            print(" bytes to \"");
             print(f->name);
-            print("\n");
+            print("\"\n");
+
             return 0;
         }
     }
     print("beat!fs: file not found\n");
     return -1;
 }
+
 
 /* read file contents (max_size bytes) */
 int beatfs_read_file(const char *name, void *out, uint32_t max_size) {

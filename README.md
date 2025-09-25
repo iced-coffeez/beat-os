@@ -3,9 +3,25 @@ This is an open-source 64-bit (x86_64) operating system created by me! (i used c
 Also, it MAY be able to run DOOM (if someone ported it properly).
 # Building Prerequisites
 1) Make (you can use this in docker if you're on windows)
-2) ncurses (on debian the package is libncurses-dev) (same here)
-3) Docker
-4) Any x86_64 supported virtualization software (Make sure the VM is configured to x64-bit! THIS IS NOT BASED ON UNIX!)
+2) Git (if you're cloning the repository. If you're downloading from a .zip, you don't need this.)
+3) ncurses (on debian the package is libncurses-dev) (same here)
+4) Docker
+5) Any x86_64 supported virtualization software (Make sure the VM is configured to x64-bit! THIS IS NOT BASED ON UNIX!)
+# Automated Building + Cloning (on linux)
+```
+# OTHER METHODS ARE RECOMMENDED OVER THIS!
+git clone https://github.com/iced-coffeez/beat-os.git
+cd beat-os
+sudo make x86_64 -j 8
+./vmstart.sh
+```
+# Cloning (on Windows)
+```
+:: OTHER METHODS ARE RECOMMENDED OVER THIS!
+git clone https://github.com/iced-coffeez/beat-os.git
+cd beat-os
+start.bat
+```
 # Building on Unix-Like Systems (ex. Linux):
 1) Run start.sh as sudo in the project directory.
 `sudo ./start.sh`

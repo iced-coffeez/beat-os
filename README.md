@@ -20,6 +20,7 @@ sudo make x86_64 -j 8
 :: OTHER METHODS ARE RECOMMENDED OVER THIS!
 git clone https://github.com/iced-coffeez/beat-os.git
 cd beat-os
+dockerbuild.bat
 start.bat
 ```
 # Building on Unix-Like Systems (ex. Linux):

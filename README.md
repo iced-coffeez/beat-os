@@ -7,13 +7,20 @@ Also, it MAY be able to run DOOM (if someone ported it properly).
 3) Docker
 4) Any x86_64 supported virtualization software (Make sure the VM is configured to x64-bit! THIS IS NOT BASED ON UNIX!)
 # Building on Unix-Like Systems (ex. Linux):
-1) Run start.sh as sudo.
+1) Run start.sh as sudo in the project directory.
 `sudo ./start.sh`
-2) Once you're in the virtual machine (or after it is done building), type this command:
+2) To build beat!os, tpye this command:
 `make x86_64`
-3) Exit the virtual machine.
-4) Run vmstart.sh:
+3) Exit the Docker machine.
+4) Run vmstart.sh, still in the project directory:
 `./vmstart.sh`
-# Building on 
+# Building on Windows:
+1) Run start.bat in an administrator CMD window in the project directory.
+`start.bat`
+2) To build beat!os, type this command:
+`make x86_64`
+3) Exit the Docker machine.
+4) Run vmstart.bat, still in the project directory:
+`vmstart.bat`
 # EXTRAS:
 Use `make clean` to clean the build if needed.

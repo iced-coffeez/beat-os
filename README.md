@@ -2,12 +2,11 @@
 This is an open-source 64-bit (x86_64) operating system created by me! (i used chatgpt for reference.)
 Also, it MAY be able to run DOOM (if someone ported it properly).
 # Building Prerequisites
-1) Make
-2) ncurses (on debian the package is libncurses-dev)
+1) Make (you can use this in docker if you're on windows)
+2) ncurses (on debian the package is libncurses-dev) (same here)
 3) Docker
-4) Qemu, or any other virtualization service (MAKE SURE ITS SET TO x64 OTHER IN VIRTUALBOX, AND OTHER SOFTWARE LIKE VMWARE.) (you can install these in the docker, or on your main machine.)
-5) Linux is heavily preferred over any other operating system/kernel. Unix-like systems are mildly preferred.
-# Building:
+4) Any x86_64 supported virtualization software (Make sure the VM is configured to x64-bit! THIS IS NOT BASED ON UNIX!)
+# Building on Unix-Like Systems (ex. Linux):
 1) Run start.sh as sudo.
 `sudo ./start.sh`
 2) Once you're in the virtual machine (or after it is done building), type this command:
@@ -15,8 +14,6 @@ Also, it MAY be able to run DOOM (if someone ported it properly).
 3) Exit the virtual machine.
 4) Run vmstart.sh:
 `./vmstart.sh`
+# Building on 
 # EXTRAS:
 Use `make clean` to clean the build if needed.
-
-# DISCLAIMER:
-I do not have a guide on how to build this on Windows or macOS, unfortunately. macOS should work similarly to Linux, since they are both built on Unix. (I know macOS is XNU, but it's similar.) I say this because start.sh is required to start the docker.

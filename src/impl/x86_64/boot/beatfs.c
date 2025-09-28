@@ -306,21 +306,25 @@ int beatfs_read_file(const char *name, void *out, uint32_t max_size) {
     return -1;
 }
 
-/* print file list */
 void beatfs_list(void) {
     print("beat!fs files:\n");
     for (uint32_t i = 0; i < sb.file_count; ++i) {
         BeatFS_File *f = &sb.files[i];
         print(" - ");
         print(f->name);
-        print(" (");
+        print(": ");
         print_u32(f->size);
+        print(" bytes (allocated ");
+        print_u32(f->blocks * BEATFS_SECTOR_SZ);
         print(" bytes, LBA ");
         print_u32(f->start_lba);
         print(")\n");
     }
-    if (sb.file_count == 0) print("  <empty>\n");
+    if (sb.file_count == 0) {
+        print("  <empty>\n");
+    }
 }
+
 
 int beatfs_remove(const char *name) {
     for (uint32_t i = 0; i < sb.file_count; ++i) {

@@ -138,7 +138,7 @@ void checkcommand(char* ascii) {
         print("reinit - recalls the kernel script\n");
         print("probe [name] - creates file with name\n");
         print("echo [text] - prints text to screen\n");
-        print("ldc - lists drive contents");
+        print("ldc - lists drive contents\n");
     }
     if (strcmp_custom(ascii, "reinit")) {
         reset_cmd();

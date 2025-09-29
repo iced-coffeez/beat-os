@@ -81,10 +81,10 @@ void parse_command2(char *input, char **cmd, char **arg1, char **arg2) {
 
 
 void ident_drv() {
-    beatfs_init(0);                       // init filesystem (master drive)
-    //beatfs_create("hello.txt");      // create
+    beatfs_init(0);                         // init filesystem (master drive)
+    //beatfs_create("hello.txt");           // create
     //beatfs_remove("hello.txt");           // delete
-    beatfs_list();                        // should show <empty>    
+    //beatfs_list();                       // should show <empty>    
 }
 
 void str_append_char(char* buffer, size_t* len, char c) {

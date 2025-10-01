@@ -33,5 +33,7 @@ x86_64: $(kernel_object_files) $(x86_64_object_files)
 	grub-mkrescue /usr/lib/grub/i386-pc -o dist/x86_64/kernel.iso targets/x86_64/iso
 .PHONY: clean
 clean:
-	rm -rf build/x86_64
-	rm -rf dist/x86_64
+	rm -rf build dist
+.PHONY: run
+run:
+	qemu-system-x86_64 -cdrom dist/x86_64/kernel.iso

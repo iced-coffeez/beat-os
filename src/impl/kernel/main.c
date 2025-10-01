@@ -5,7 +5,6 @@
 #include <draw.h>
 #include <beatfs.h>
 #include <conversion.h>
-#include <lua.h>
 
 void halt(char* reason) {
     print("Halted System! Error Code: ");
@@ -118,6 +117,12 @@ void handle_modifier(uint8_t scancode) {
     }
 }
 
+void runCode(char* command) {
+    if (strcmp_custom(programlang, "python")) {
+        
+    }
+}
+
 void checkcommand(char* ascii) {
     char *cmd;
     char *arg;
@@ -139,6 +144,8 @@ void checkcommand(char* ascii) {
         print("probe [name] - creates file with name\n");
         print("echo [text] - prints text to screen\n");
         print("ldc - lists drive contents\n");
+        print("setexeclang [coding language] - sets programming language\n");
+        print("exec [code] - executes Lua code\n");
     }
     if (strcmp_custom(ascii, "reinit")) {
         reset_cmd();
@@ -160,6 +167,9 @@ void checkcommand(char* ascii) {
     }
     else if (strcmp_custom(cmd, "probe")) {
         beatfs_create(arg);
+    }
+    else if (strcmp_custom(cmd, "exec")) {
+
     }
     else if (strcmp_custom(cmd, "\n")) {
         return 1;

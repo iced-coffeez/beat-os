@@ -1,4 +1,4 @@
-#include "beatfs.h"
+#include "beatfs-goofychatgpt.h"
 #include "io.h"     // must provide inb/outb/inw/outw/outl/outl etc.
 #include "print.h"
 #include <stdint.h>

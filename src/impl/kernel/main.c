@@ -326,4 +326,7 @@ void kernel_main() {
             shouldSaveChar = true;
         }
     }
+    if (!alive) {
+        halt("Kernel Panic!");
+    }
 }

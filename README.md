@@ -6,7 +6,8 @@ Also, it MAY be able to run DOOM (if someone ported it properly).
 2) Git (if you're cloning the repository. If you're downloading from a .zip, you don't need this.)
 3) ncurses (on debian the package is libncurses-dev) (you can use this in docker. already installed by default, usually.)
 4) Docker
-5) Any x86_64 supported virtualization software (Make sure the VM is configured to x64-bit! THIS IS NOT BASED ON UNIX!)
+5) elf-gcc (is included in Dockerfile)
+6) Any x86_64 supported virtualization software (Make sure the VM is configured to x64-bit! THIS IS NOT BASED ON UNIX!)
 # Automated Building + Cloning (on linux)
 ```
 # OTHER METHODS ARE RECOMMENDED OVER THIS!

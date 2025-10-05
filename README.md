@@ -1,5 +1,5 @@
 # Welcome to beat!os
-This is an open-source 64-bit (x86_64) operating system created by me! (i used chatgpt for reference.)
+This is a 64-bit (x86_64) operating system created by me! (protected under LGPL) (i used chatgpt for reference.)
 Also, it MAY be able to run DOOM (if someone ported it properly).
 # Building Prerequisites
 1) Make (you can use this in docker if you're on windows)

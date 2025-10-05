@@ -144,8 +144,8 @@ void checkcommand(char* ascii) {
         print("probe [name] - creates file with name\n");
         print("echo [text] - prints text to screen\n");
         print("ldc - lists drive contents\n");
-        print("setexeclang [coding language] - sets programming language\n");
-        print("exec [code] - executes Lua code\n");
+        print("setexeclang [coding language] - sets programming language of exec command\n");
+        print("exec [code] - executes code\n");
     }
     if (strcmp_custom(ascii, "reinit")) {
         reset_cmd();

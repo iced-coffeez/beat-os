@@ -5,6 +5,8 @@
 #include <draw.h>
 #include <beatfs.h>
 #include <conversion.h>
+#include <beatqpl.h>
+#include <strcmp.h>
 
 void halt(char* reason) {
     print("Halted System! Error Code: ");
@@ -23,16 +25,6 @@ bool alt_pressed   = false;
 #define LASTCMD_ 128
 char LASTCMD[LASTCMD_];
 size_t _LASTCMD = 0;
-
-// returns 1 if equal, 0 if not
-int strcmp_custom(const char *a, const char *b) {
-    while (*a && *b) {           // loop until one hits null
-        if (*a != *b) return 0;  // mismatch
-        a++;
-        b++;
-    }
-    return (*a == '\0' && *b == '\0'); // both ended? equal
-}
 
 // split input into command and first argument
 void parse_command(char *input, char **cmd, char **arg) {
@@ -144,8 +136,7 @@ void checkcommand(char* ascii) {
         print("probe [name] - creates file with name\n");
         print("echo [text] - prints text to screen\n");
         print("ldc - lists drive contents\n");
-        print("setexeclang [coding language] - sets programming language of exec command\n");
-        print("exec [code] - executes code\n");
+        print("exec [code] - executes code in beat!qpl (quick processing language)\n");
     }
     if (strcmp_custom(ascii, "reinit")) {
         reset_cmd();

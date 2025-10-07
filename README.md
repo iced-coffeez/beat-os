@@ -1,5 +1,3 @@
-MR ROBLOX ASGORE DONT KILL ME
-
 # Welcome to beat!os
 This is a 64-bit (x86_64) operating system created by me! (protected under LGPL) (i used chatgpt for reference.)
 Also, it MAY be able to run DOOM (if someone ported it properly).

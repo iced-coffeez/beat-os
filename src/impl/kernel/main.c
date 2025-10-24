@@ -5,7 +5,6 @@
 #include <draw.h>
 #include <beatfs.h>
 #include <conversion.h>
-#include <beatqpl.h>
 #include <strcmp.h>
 
 void halt(char* reason) {
@@ -136,7 +135,7 @@ void checkcommand(char* ascii) {
         print("probe [name] - creates file with name\n");
         print("echo [text] - prints text to screen\n");
         print("ldc - lists drive contents\n");
-        print("exec [code] - executes code in beat!qpl (quick processing language)\n");
+        // print("exec [code] - executes code in beat!qpl (quick processing language)\n");
     }
     if (strcmp_custom(ascii, "reinit")) {
         reset_cmd();

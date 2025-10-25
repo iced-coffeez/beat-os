@@ -135,7 +135,6 @@ void checkcommand(char* ascii) {
         print("probe [name] - creates file with name\n");
         print("echo [text] - prints text to screen\n");
         print("ldc - lists drive contents\n");
-        
     }
     if (strcmp_custom(ascii, "reinit")) {
         reset_cmd();

@@ -135,6 +135,7 @@ void checkcommand(char* ascii) {
         print("probe [name] - creates file with name\n");
         print("echo [text] - prints text to screen\n");
         print("ldc - lists drive contents\n");
+        print("wm - opens window manager\n");
     }
     if (strcmp_custom(ascii, "reinit")) {
         reset_cmd();
@@ -146,6 +147,9 @@ void checkcommand(char* ascii) {
     if (strcmp_custom(ascii, "unalive")) {
         alive = false;
     }
+    if (strcmp_custom(ascii, "wm")) {
+        print("Initializing beat!wm (beat! Window Manager)");
+    }
     else if (strcmp_custom(cmd, "echo")) {
         if (arg) {
             print(arg);
@@ -156,9 +160,6 @@ void checkcommand(char* ascii) {
     }
     else if (strcmp_custom(cmd, "probe")) {
         beatfs_create(arg);
-    }
-    else if (strcmp_custom(cmd, "exec")) {
-
     }
     else if (strcmp_custom(cmd, "\n")) {
         return 1;

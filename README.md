@@ -6,7 +6,7 @@ hello! i am the creator of beat!os :D its based on the Linux Kernel (much thanks
 ## Getting a JVM
 download Oracle GraalVM 25 (JDK 25) from [graalvm.org](https://www.graalvm.org/downloads/), extract it, and place the contents in `files/jvm/` :P
 ## Installing neccessary packages
-### Dependencies:
+Dependencies:
 ```bash
 parted grub-install mkfs.vfat mkfs.ext4 losetup cpio dd zip```
 ### Install Command for Debian/Ubuntu:

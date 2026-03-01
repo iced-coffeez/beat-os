@@ -1,0 +1,47 @@
+#!/bin/sh
+
+set -e
+
+fallback() {
+	echo "ERROR IN INIT: Falling back to emergency mode."
+	exec ./.backup_init
+}
+
+trap fallback ERR
+
+mkdir -p /proc /dev || exec ./.backup_init
+
+mount -t proc proc /proc || exec ./.backup_init
+mount -t devtmpfs devtmpfs /dev || exec ./.backup_init
+
+[ -e /dev/console ] || mknod -m 600 /dev/console c 5 1
+exec >/dev/console 2>&1 </dev/console
+
+echo "Waiting for root device..."
+
+for i in 1 2 3 4 5; do
+	if findfs LABEL=beatOS >/dev/null 2>&1; then
+		break
+	fi
+	echo "Waiting for label 'beatOS'... ($i/5)"
+	sleep 1
+done
+
+echo "Mounting root fs..."
+
+mkdir /newroot
+
+mount -o rw -t ext4 LABEL=beatOS /newroot || exec ./.backup_init
+
+if [ ! -d "/newroot/bin" ]; then
+	mkdir -p /newroot/bin
+	cp -a /bin/. /newroot/bin/
+fi
+
+# echo "Switching root..."
+exec switch_root /newroot /sbin/init
+
+/bin/sh
+
+sync
+poweroff -f

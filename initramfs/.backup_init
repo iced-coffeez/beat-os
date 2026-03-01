@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo "--EMERGENCY MODE--"
+
+exec /bin/sh

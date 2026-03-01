@@ -12,5 +12,5 @@ parted grub-install mkfs.vfat mkfs.ext4 losetup cpio dd zip
 ```
 Install Command for Debian/Ubuntu:
 ```bash
-sudo apt install parted grub-pc grub-efi dosfstools e2fsprogs util-linux cpio zip
+sudo apt install parted grub-pc-bin grub-efi-amd64-bin dosfstools e2fsprogs util-linux cpio zip qemu-system-x86
 ```

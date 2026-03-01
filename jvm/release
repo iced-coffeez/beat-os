@@ -1,2 +1,0 @@
-JAVA_VERSION="25.0.2"
-MODULES="java.base java.logging jdk.internal.vm.ci"

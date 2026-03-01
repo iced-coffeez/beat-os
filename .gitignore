@@ -1,3 +1,4 @@
 beatos.img
+jvm/
 *.boxpkg
 OVMF_VARS.fd

@@ -8,8 +8,9 @@ download Oracle GraalVM 25 (JDK 25) from [graalvm.org](https://www.graalvm.org/d
 ## Installing neccessary packages
 Dependencies:
 ```bash
-parted grub-install mkfs.vfat mkfs.ext4 losetup cpio dd zip```
-### Install Command for Debian/Ubuntu:
+parted grub-install mkfs.vfat mkfs.ext4 losetup cpio dd zip
+```
+Install Command for Debian/Ubuntu:
 ```bash
 sudo apt install parted grub-pc grub-efi dosfstools e2fsprogs util-linux cpio zip
 ```

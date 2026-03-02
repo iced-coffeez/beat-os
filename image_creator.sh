@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-bt="$1"
+bt="${1:-}"
 
 cleanup() {
 	echo "Cleaning up..."
@@ -197,6 +197,25 @@ mount -t sysfs sysfs /mnt/root/sys
 mount -t devtmpfs devtmpfs /mnt/root/dev
 mount -t tmpfs tmpfs /mnt/root/run
 mount -t tmpfs tmpfs /mnt/root/tmp
+
+echo "[*] Bringing up network devices..."
+IFACE=$(ip link | awk -F: '$0 !~ "lo|vir|wl|^[^0-9]"{print $2; getline}' | tr -d ' ' | head -1)
+
+if [ ! -d /etc/udhcpc ]; then
+	mkdir -p /etc/udhcpc
+fi
+
+if [ ! -f /etc/udhcpc/default.script ]; then
+	printf '#!/bin/sh\ncase "$1" in\n\tbound|renew)\n\t\tip addr add $ip/$mask dev $interface\n\t\tip route add default via $router dev $interface\n\t\t;;\n\tdeconfig)\n\t\tip addr flush dev $interface\n\t\t;;\nesac\n' > /etc/udhcpc/default.script
+	chmod +x /etc/udhcpc/default.script
+fi
+
+for iface in $(ls /sys/class/net/); do
+    if [ "$iface" != "lo" ]; then
+        ip link set $iface up
+        udhcpc -i $iface -n -q -s /etc/udhcpc/default.script 2>/dev/null && break
+    fi
+done
 
 echo "beat!os (Installation Media)"
 chroot /mnt/root /bin/sh -c "exec setsid cttyhack /bin/sh"

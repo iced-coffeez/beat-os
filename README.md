@@ -4,6 +4,7 @@ hello! i am the creator of beat!os :D its based on the Linux Kernel (much thanks
 
 # Prerequisites
 YOU NEED AT LEAST 5GB OF STORAGE AVAILABLE!
+8GB of RAM is recommended!
 ## Getting a JVM
 download Oracle GraalVM 25 (JDK 25) from [graalvm.org](https://www.graalvm.org/downloads/), extract it, and place the contents in `jvm/` :P
 ## Installing necessary packages

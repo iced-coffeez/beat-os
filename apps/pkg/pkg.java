@@ -486,14 +486,22 @@ public class pkg {
 		} else {
 			System.out.println("Attempting to install global package \"" + pkg + "\"...");
 			try {
-				HttpClient client = HttpClient.newHttpClient();
+				HttpClient client = HttpClient.newBuilder()
+					.followRedirects(HttpClient.Redirect.ALWAYS)
+					.build();
+
 				HttpRequest request = HttpRequest.newBuilder()
-					.uri(URI.create("https://api.github.com/repos/iced-coffeez/beat-packages/content/packages/"))
+					.uri(URI.create("https://api.github.com/repos/iced-coffeez/beat-packages/contents/packages/"))
 					.header("User-Agent", "beat-pkg")
 					.build();
 				System.out.println("Fetching package list...");
 				HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 				String body = response.body();
+
+				if (debug) {
+					System.out.println("[*] Status: " + response.statusCode());
+					System.out.println("[*] Response: " + body);
+				}
 
 				String target = "\"name\":\"" + pkg + ".boxpkg\"";
 				int idx = body.indexOf(target);

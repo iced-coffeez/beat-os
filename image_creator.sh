@@ -175,6 +175,10 @@ fi
 
 mkdir -p /tmp/lower_root /tmp/overlay /mnt/root
 
+if [ ! -f /etc/resolv.conf ]; then
+	echo "nameserver 8.8.8.8" > /etc/resolv.conf
+fi
+
 cp -a /bin /sbin /lib /lib64 /opt /etc /usr /mnt /tmp/lower_root
 mount -t tmpfs -o size=1024M tmpfs /tmp/overlay
 mkdir -p /tmp/overlay/upper /tmp/overlay/work

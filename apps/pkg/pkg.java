@@ -490,45 +490,38 @@ public class pkg {
 					.followRedirects(HttpClient.Redirect.ALWAYS)
 					.build();
 
-				HttpRequest request = HttpRequest.newBuilder()
-					.uri(URI.create("https://api.github.com/repos/iced-coffeez/beat-packages/contents/packages/"))
-					.header("User-Agent", "beat-pkg")
-					.build();
-				System.out.println("Fetching package list...");
-				HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-				String body = response.body();
+				String downloadUrl = "https://repo.beatos.org/" + pkg + ".boxpkg";
 
-				if (debug) {
-					System.out.println("[*] Status: " + response.statusCode());
-					System.out.println("[*] Response: " + body);
-				}
-
-				String target = "\"name\":\"" + pkg + ".boxpkg\"";
-				int idx = body.indexOf(target);
-				if (idx == -1) {
-					System.out.println("[X] Package \"" + pkg + "\" not found in beat!os package repository.");
-					return;
-				}
-
-				int urlIdx = body.indexOf("\"download_url\":\"", idx);
-				int urlEnd = body.indexOf("\"", urlIdx + 16);
-				String downloadUrl = body.substring(urlIdx + 16, urlEnd);
-				
-				if (debug) {
-					System.out.println("[*] Download URL: " + downloadUrl);
-				}
-
-				System.out.println("[*] Downloading " + pkg + "...");
 				HttpRequest dlRequest = HttpRequest.newBuilder()
 					.uri(URI.create(downloadUrl))
 					.header("User-Agent", "beat-pkg")
 					.build();
 				
+				HttpRequest headRequest = HttpRequest.newBuilder()
+					.uri(URI.create(downloadUrl))
+					.header("User-Agent", "beat-pkg")
+					.HEAD()
+					.build();
+				
+				HttpResponse<Void> headResponse = client.send(headRequest, HttpResponse.BodyHandlers.discarding());
+
+				if (headResponse.statusCode() == 404) {
+					System.out.println("[X] Package \"" + pkg + "\" not found in beat!os repository.");
+					return;
+				}
+				
+				System.out.println("[*] Downloading " + pkg + "...");
+
 				Path tmpPkg = Paths.get("/tmp", pkg + ".boxpkg");
 				client.send(dlRequest, HttpResponse.BodyHandlers.ofFile(tmpPkg));
 
 				local = true;
+
 				install(tmpPkg.toString());
+
+				local = false;
+
+				tmpPkg.toFile().delete();
 
 			} catch (Exception e) {
 				System.out.println("[X] Failed to fetch package: " + e.getMessage());

@@ -33,7 +33,7 @@ mkdir /newroot
 
 mount -o rw -t ext4 LABEL=beatOS /newroot || exec ./.backup_init
 
-if [ ! -d "/newroot/bin" ]; then
+if [ ! -f "/newroot/bin/sh" ]; then
 	mkdir -p /newroot/bin
 	cp -a /bin/. /newroot/bin/
 fi

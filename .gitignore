@@ -2,3 +2,4 @@ beatos.img
 jvm/
 *.boxpkg
 *.fd
+upload_image.sh

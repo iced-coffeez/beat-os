@@ -27,20 +27,126 @@ import java.util.zip.ZipInputStream;
 public class pkg {
 	// static Scanner sc = new Scanner(System.in);
 
+	static String version = "v0.01 Prerelease";
+
 	static boolean local = false;
 
 	static boolean debug = false;
 
 	public static void help() {
-		System.out.println("Usage:\n\npkg unpack [package] -- Installs package from local file [package].boxpkg.");
-		System.out.println("pkg return [package] -- Removes package.\n");
+		System.out.println("Usage:\n\npkg unpack [package] [Options] -- Installs package from local file [package].boxpkg.");
+		System.out.println("pkg return [package] [Options] -- Removes package.\n");
 		System.out.println("pkg scalp [Options] --essential — Downloads and upgrades packages, as well as the repository. (--essential upgrades and replaces essential packages)");
 		System.out.println("pkg help -- Shows this screen.\n");
+		System.out.println("\nVersion: " + version);
 		System.out.println("PLEASE NOTE: To install a local package, you must pass the --local flag.");
+	}
+	
+	public static void checkAndUpgrade(String pkg, String version) {
+		try {
+			HttpClient client = HttpClient.newBuilder()
+				.followRedirects(HttpClient.Redirect.ALWAYS)
+				.build();
+			
+			HttpRequest request = HttpRequest.newBuilder()
+				.uri(URI.create("https://repo.beatos.org/" + pkg + ".boxpkg"))
+				.header("User-Agent", "beat-pkg")
+				.header("Range", "bytes=0-64")
+				.build();
+			
+			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+			
+			if (response.statusCode() == 404) {
+				System.out.println("[!] " + pkg + " not found in repository. Skipping...");
+				return;
+			}
+
+			String firstLine = response.body().split("\n")[0].trim();
+			if (!firstLine.startsWith("version=")) {
+				System.out.println("[X] Corrupt or outdated package! The package should support \"pkg\" version 0.01 prerelease. Contact the creator of this package.");
+				System.out.println("\nPackage: " + pkg);
+				return;
+			}
+
+			String repoVersion = firstLine.substring(8);
+
+			if (!repoVersion.equals(version)) {
+				System.out.println("[*] Upgrading " + pkg + " (" + version + " -> " + repoVersion + ")");
+				returnPkg(pkg);
+				install(pkg);
+			}
+		} catch (Exception e) {
+			System.out.println("[!] Servers unaccessable? Error: " + e.getMessage());
+			return;
+		}
 	}
 
 	public static void scalp() {
+		Path packageList = Paths.get("/etc/pkg/.package_list");
+		Path trusted = Paths.get("/etc/pkg/trusted");
+		if (!Files.exists(trusted)) {
+			System.out.println("[!] Trusted keystore not found! Creating...");
+			try {
+				Files.createDirectories(trusted);
+				
+				HttpClient client = HttpClient.newBuilder()
+					.followRedirects(HttpClient.Redirect.ALWAYS)
+					.build();
 
+				HttpRequest keyRequest = HttpRequest.newBuilder()
+					.uri(URI.create("https://repo.beatos.org/officialRepo.pub"))
+					.header("User-Agent", "beat-pkg")
+					.build();
+				
+				Path keyPath = trusted.resolve("officialRepo.pub");
+				client.send(keyRequest, HttpResponse.BodyHandlers.ofFile(keyPath));
+
+				System.out.println("[*] Grabbed repo key.");
+			} catch (IOException | InterruptedException e) {
+				System.out.println("[X] Failed to set up keystore: " + e.getMessage());
+				return;
+			}
+		}
+		if (!Files.exists(packageList)) {
+			System.out.println("[!] No packages to upgrade!");
+			return;
+		}
+
+		try {
+			if (Files.size(packageList) == 0) {
+				System.out.println("[!] No packages to upgrade!");
+				return;
+			}
+		} catch (IOException e) {
+			System.out.println("[!] Error reading package list! Your system is screwed unless you have a backup.");
+			System.out.println("");
+			System.out.println("P.S: lol get pwned noob");
+			System.exit(0);
+		}
+
+		try {
+			List<String> lines = Files.readAllLines(packageList);
+			String currentPkg = null;
+			String currentVer = null;
+			
+			for (String line: lines) {
+				String trimmed = line.trim();
+				if (trimmed.startsWith("pkg=")) {
+					currentPkg = trimmed.substring(4);
+				} else if (trimmed.startsWith("ver=")) {
+					currentVer = trimmed.substring(4);
+				} else if (trimmed.equals("}") && currentPkg != null && currentVer != null) {
+					checkAndUpgrade(currentPkg, currentVer);
+					currentPkg = null;
+					currentVer = null;
+				}
+			}
+
+		} catch (Exception e) {
+			System.out.println("[X] Error reading package list: " + e.getMessage());
+			System.out.println("\nlol ur system is screwed");
+			System.out.println("unless u manually edit and fix /etc/pkg/.package_list");
+		}
 	}
 
 	public static void addPackageToRegistry(String pkgPath, String version) {
@@ -71,29 +177,42 @@ public class pkg {
 		try {
 			List<String> lines = Files.readAllLines(packageList);
 			List<String> newLines = new ArrayList<>();
+			List<String> blockBuffer = new ArrayList<>();
 
-			boolean skip = false;
+			boolean skipBlock = false;
 			boolean insidePackage = false;
 			
 			for (String line : lines) {
 				String trimmed = line.trim();
 				if (trimmed.startsWith("package {")) {
 					insidePackage = true;
-					skip = false;
+					skipBlock = false;
+					blockBuffer.clear();
+					blockBuffer.add(line);
+					continue;
 				}
-				if (insidePackage && trimmed.startsWith("pkg=") && trimmed.substring(4).equals(pkgPath)) {
-					skip = true;
-				}
-				
-				if (!skip) {
+				if (insidePackage) {
+					blockBuffer.add(line);
+					if (trimmed.startsWith("pkg=") && trimmed.substring(4).equals(pkgPath)) {
+						skipBlock = true;
+					}
+
+					if (trimmed.equals("}")) {
+						insidePackage = false;
+						if (!skipBlock) {
+							newLines.addAll(blockBuffer);
+						}
+						blockBuffer.clear();
+					}
+				} else {
 					newLines.add(line);
 				}
-
-				if (insidePackage && trimmed.equals("}")) {
-					insidePackage = false;
-					skip = false;
-				}
+				/* if (insidePackage && trimmed.startsWith("pkg=") && trimmed.substring(4).equals(pkgPath)) {
+					skip = true;
+				} */
 			}
+
+			newLines.removeIf(line -> line.trim().isEmpty());
 
 			Files.write(packageList, newLines);
 			if (debug) {
@@ -205,7 +324,65 @@ public class pkg {
 	}
 
 	public static void returnPkg(String pkg) {
+		Path pkgRoot = Paths.get("/etc/pkg", pkg);
 
+		if (!Files.exists(pkgRoot)) {
+			System.out.println("[X] Package \"" + pkg + "\" is not installed.");
+			return;
+		}
+
+		Path[] dirsToCheck = new Path[] {
+			pkgRoot.resolve("bin"),
+			pkgRoot.resolve("lib"),
+			pkgRoot.resolve("lib64")
+		};
+
+		Path[] targets = new Path[] {
+			Paths.get("/bin"),
+			Paths.get("/lib"),
+			Paths.get("/lib64")
+		};
+
+		for (int i = 0; i < dirsToCheck.length; i++) {
+			Path sourceDir = dirsToCheck[i];
+			Path targetDir = targets[i];
+
+			if (!Files.exists(sourceDir)) continue;
+
+			try {
+				Files.list(sourceDir).forEach(child -> {
+					Path link = targetDir.resolve(child.getFileName());
+					try {
+						if (Files.isSymbolicLink(link)) {
+							Files.delete(link);
+							if (debug) {
+								System.out.println("[*] Removed symlink: " + link);
+							}
+						}
+					} catch (Exception e) {
+						System.out.println("[X] Failed to remove symlink " + link + ": " + e.getMessage());
+					}
+				});
+			} catch (IOException e) {
+				System.out.println("[X] Error reading " + sourceDir + ": " + e.getMessage());
+			}
+		}
+
+		try {
+			new ProcessBuilder("rm", "-rf", pkgRoot.toString())
+				.inheritIO()
+				.start()
+				.waitFor();
+			if (debug) {
+				System.out.println("[*] Deleted " + pkgRoot);
+			}
+		} catch (IOException | InterruptedException e) {
+			System.out.println("[X] Failed to delete package directory: " + e.getMessage());
+        	return;
+		}
+
+		removePackageFromRegistry(pkg);
+		System.out.println("[!] Package \"" + pkg + "\" removed.");
 	}
 
 	public static void install(String pkg) {
@@ -225,7 +402,7 @@ public class pkg {
 				BufferedReader reader = new BufferedReader(new FileReader(file));
 
 				if (!file.getName().endsWith(extension)) {
-					System.out.println("[X] 1 Check Failed!\nExiting...\n\n");
+					System.out.println("[X] Does not have .boxpkg extension!\nExiting...\n\n");
 					System.exit(0);
 				}
 				
@@ -278,6 +455,10 @@ public class pkg {
 
 				System.out.println("--Package info--\nName: " + name);
 				System.out.println("Description: " + description);
+				if (Files.exists(Paths.get("/etc/pkg", name))) {
+					System.out.println("[X] Pacakge \"" + name + "\" is already installed. Use \"pkg scalp\" to check for the latest version.");
+					return;
+				}
 
 				File outFile = new File(tmpDir, name + ".zip");
 
@@ -427,10 +608,10 @@ public class pkg {
 						    Path sourceDir = dirsToLink[i];
 						    Path targetDir = targets[i];
 						
-						    if (!Files.exists(sourceDir)) continue; // skip missing dirs
+						    if (!Files.exists(sourceDir)) continue;
 						
 						    try {
-						        Files.list(sourceDir).forEach(child -> { // renamed from 'file' to 'child'
+						        Files.list(sourceDir).forEach(child -> {
 						            Path link = targetDir.resolve(child.getFileName());
 						            try {
 						                if (!Files.exists(link)) {
@@ -449,6 +630,13 @@ public class pkg {
 						        System.out.println("[X] Error reading directory " + sourceDir + ": " + e.getMessage());
 						    }
 						}
+
+						Path pkgData = Paths.get("/var/pkg", name);
+						Files.createDirectories(pkgData);
+
+						Path dataSym = Paths.get("/etc/pkg", name, "data");
+
+						Files.createSymbolicLink(dataSym, pkgData);
 
 						if (extraHook != null && !extraHook.isEmpty()) {
 							Path hookPath = extractDir.toPath()
@@ -473,6 +661,16 @@ public class pkg {
 						}
 
 						System.out.println("[!] Package Installed!");
+
+						try {
+							new ProcessBuilder("rm", "-rf", extractDir.getAbsolutePath(), outFile.getAbsolutePath())
+								.inheritIO()
+								.start()
+								.waitFor();
+
+						} catch (Exception e) {
+							System.out.println("[!] Failed to clean /tmp:" + e.getMessage());
+						}
 						
 						addPackageToRegistry(name, version);
 				}
@@ -571,6 +769,9 @@ public class pkg {
 					return;
 				}
 				returnPkg(packageName);
+				break;
+			case "scalp" :
+				scalp();
 				break;
 				
 			default:

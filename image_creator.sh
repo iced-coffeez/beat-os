@@ -233,8 +233,6 @@ done
 echo "beat!os (Installation Media)"
 chroot /mnt/root /bin/sh -c "exec setsid cttyhack /bin/sh"
 
-/bin/sh
-
 sync
 poweroff -f
 EOF

@@ -275,6 +275,12 @@ sudo chmod +x /tmp/beatos/sbin/init
 # sudo mount --bind /sys /tmp/beatos/sys
 # sudo mount --bind /run /tmp/beatos/run
 
+echo "Creating JSLinux root.bin file..."
+cd /tmp/beatos
+sudo find . | sudo cpio -o -H newc | gzip > $OLDPWD/root.bin
+cd $OLDPWD
+echo "Done!"
+
 echo "Installing GRUB..."
 
 echo "Installing GRUB [1/2...] (bios)"

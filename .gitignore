@@ -3,3 +3,4 @@ jvm/
 *.boxpkg
 *.fd
 upload_image.sh
+root.bin

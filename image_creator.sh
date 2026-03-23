@@ -3,7 +3,7 @@ set -euo pipefail
 
 bt="${1:-}"
 
-sfix="${2:-}"
+# sfix="${2:-}"
 
 cleanup() {
 	echo "Cleaning up..."
@@ -157,7 +157,7 @@ echo "Making /sbin/init ..."
 
 # CREATING /sbin/init #
 
-if  [ "$bt" == "prod" ] && [ "$sfix" == "yes" ]; then
+if [ "$bt" == "prod" ]; then
 cat <<'EOF' | sudo tee /tmp/beatos/sbin/init >/dev/null
 #!/bin/sh
 mount -t proc proc /proc
@@ -179,64 +179,7 @@ fi
 
 if [ ! -f /bin/pkg ]; then
 	echo "#!/bin/sh" > /bin/pkg
-	echo 'exec java -cp /var/apps/pkg pkg "$@"' >> /bin/pkg
-	chmod +x /bin/pkg
-fi
-
-mkdir -p /tmp/lower_root /tmp/overlay /mnt/root
-
-if [ ! -f /etc/resolv.conf ]; then
-	echo "nameserver 8.8.8.8" > /etc/resolv.conf
-fi
-
-echo "[*] Bringing up network devices..."
-IFACE=$(ip link | awk -F: '$0 !~ "lo|vir|wl|^[^0-9]"{print $2; getline}' | tr -d ' ' | head -1)
-
-if [ ! -d /etc/udhcpc ]; then
-	mkdir -p /etc/udhcpc
-fi
-
-if [ ! -f /etc/udhcpc/default.script ]; then
-	printf '#!/bin/sh\ncase "$1" in\n\tbound|renew)\n\t\tip addr add $ip/$mask dev $interface\n\t\tip route add default via $router dev $interface\n\t\t;;\n\tdeconfig)\n\t\tip addr flush dev $interface\n\t\t;;\nesac\n' > /etc/udhcpc/default.script
-	chmod +x /etc/udhcpc/default.script
-fi
-
-for iface in $(ls /sys/class/net/); do
-    if [ "$iface" != "lo" ]; then
-        ip link set $iface up
-        udhcpc -i $iface -n -q -s /etc/udhcpc/default.script 2>/dev/null && break
-    fi
-done
-
-echo "beat!os (Installation Media)"
-/bin/sh -c "exec setsid cttyhack /bin/sh"
-
-sync
-poweroff -f
-EOF
-elif [ "$bt" == "prod" ]; then
-cat <<'EOF' | sudo tee /tmp/beatos/sbin/init >/dev/null
-#!/bin/sh
-mount -t proc proc /proc
-mount -t sysfs sysfs /sys
-mount -t devtmpfs devtmpfs /dev
-mount -t tmpfs tmpfs /run
-mount -t tmpfs tmpfs /tmp
-
-if [ ! -e /bin/java ]; then
-	ln -s /var/jvm/bin/java /bin/java
-fi
-
-export ENV=/etc/profile
-
-if [ ! -f /etc/profile ]; then
-	echo "alias shutdown='sync; poweroff -f'" > /etc/profile
-	echo "alias reboot='sync; reboot -f'" >> /etc/profile
-fi
-
-if [ ! -f /bin/pkg ]; then
-	echo "#!/bin/sh" > /bin/pkg
-	echo 'exec java -cp /var/apps/pkg pkg "$@"' >> /bin/pkg
+	echo 'exec java -Xmx1800M -Xms1800M -cp /var/apps/pkg pkg "$@"' >> /bin/pkg
 	chmod +x /bin/pkg
 fi
 

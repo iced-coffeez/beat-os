@@ -1,6 +1,6 @@
 beatos.img
 jvm/
-initramfs/bin
+initramfs/bin/*
 *.boxpkg
 *.fd
 upload_image.sh

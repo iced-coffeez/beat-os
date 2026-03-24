@@ -179,7 +179,7 @@ fi
 
 if [ ! -f /bin/pkg ]; then
 	echo "#!/bin/sh" > /bin/pkg
-	echo 'exec java -Xmx1800M -Xms1800M -cp /var/apps/pkg pkg "$@"' >> /bin/pkg
+	echo 'exec java -Xms1800M -cp /var/apps/pkg pkg "$@"' >> /bin/pkg
 	chmod +x /bin/pkg
 fi
 

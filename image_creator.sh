@@ -105,13 +105,15 @@ echo "Creating directories..."
 
 sudo mkdir -p /tmp/beatos/{dev,proc,sys,run,tmp,lib,etc,sbin,opt,usr,mnt,var}
 
-echo "Copying contents..."
+echo "Copying contents... [1/2 Essentials]"
 
 sudo mkdir -p /tmp/beatos/boot
 sudo cp bzImage /tmp/beatos/boot/vmlinuz-beatOS
 sudo cp initramfs.cpio /tmp/beatos/boot/initramfs-beatOS.cpio.gz
 
 sudo cp -a lib_include/. /tmp/beatos/
+
+echo "Copying contents... [2/2 Java]"
 
 sudo mkdir -p /tmp/beatos/lib /tmp/beatos/lib64
 sudo ldd jvm/bin/java | grep "=>" | awk '{print $3}' | sudo xargs -I '{}' cp -v '{}' /tmp/beatos/lib

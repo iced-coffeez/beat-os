@@ -1,6 +1,6 @@
 FROM debian:trixie-slim
 
-RUN apt-get clean && apt-get update -o Acquire::ForceIPv4=true && apt-get install -y sudo
+RUN apt-get clean && apt-get update -o Acquire::ForceIPv4=true && apt-get install -y kmod udev sudo
 
 RUN apt-get update && apt-get install -y \
     parted \

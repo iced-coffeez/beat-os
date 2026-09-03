@@ -31,7 +31,7 @@ cleanup() {
 
 	sudo rm -rf /tmp/beatos 2>/dev/null || true
 
-	rm initramfs.cpio
+	rm -f initramfs.cpio
 }
 
 trap cleanup EXIT INT TERM
@@ -52,7 +52,7 @@ find . | cpio -o -H newc | gzip > ../initramfs.cpio
 cd ..
 
 echo "Finding required size for image..."
-BOOT_SIZE=$(du -sb bzImage initramfs.cpio jvm | awk '{sum+=$1} END {print sum}')
+BOOT_SIZE=$(du -sb bzImage initramfs.cpio | awk '{sum+=$1} END {print sum}')
 TOTAL_SIZE=$BOOT_SIZE
 OVERHEAD=$((TOTAL_SIZE / 4))
 IMAGE_SIZE=$((TOTAL_SIZE + OVERHEAD + 536870912))
@@ -105,7 +105,7 @@ echo "Creating directories..."
 
 sudo mkdir -p /tmp/beatos/{dev,proc,sys,run,tmp,lib,etc,sbin,opt,usr,mnt,var}
 
-echo "Copying contents... [1/2 Essentials]"
+echo "Copying contents... [Essentials]"
 
 sudo mkdir -p /tmp/beatos/boot
 sudo cp bzImage /tmp/beatos/boot/vmlinuz-beatOS
@@ -113,21 +113,21 @@ sudo cp initramfs.cpio /tmp/beatos/boot/initramfs-beatOS.cpio.gz
 
 sudo cp -a lib_include/. /tmp/beatos/
 
-echo "Copying contents... [2/2 Java]"
+# echo "Copying contents... [2/2 Java]"
 
 sudo mkdir -p /tmp/beatos/lib /tmp/beatos/lib64
-sudo ldd jvm/bin/java | grep "=>" | awk '{print $3}' | sudo xargs -I '{}' cp -v '{}' /tmp/beatos/lib
-find jvm/lib -name "*.so*" -type f | while read lib; do
-    sudo ldd "$lib" 2>/dev/null | grep "=>" | awk '{print $3}' | sudo xargs -I '{}' cp -v '{}' /tmp/beatos/lib/ 2>/dev/null || true
-done
+# sudo ldd jvm/bin/java | grep "=>" | awk '{print $3}' | sudo xargs -I '{}' cp -v '{}' /tmp/beatos/lib
+# find jvm/lib -name "*.so*" -type f | while read lib; do
+#     sudo ldd "$lib" 2>/dev/null | grep "=>" | awk '{print $3}' | sudo xargs -I '{}' cp -v '{}' /tmp/beatos/lib/ 2>/dev/null || true
+# done
 
 sudo cp /lib64/ld-linux-x86-64.so.2 /tmp/beatos/lib64/ 2>/dev/null || \
   sudo cp /lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 /tmp/beatos/lib64/
 
-sudo mkdir -p /tmp/beatos/var/jvm
+# sudo mkdir -p /tmp/beatos/var/jvm
 sudo mkdir -p /tmp/beatos/var/apps
 
-sudo cp -r jvm/. /tmp/beatos/var/jvm
+# sudo cp -r jvm/. /tmp/beatos/var/jvm
 
 sudo cp -r apps/. /tmp/beatos/var/apps
 
@@ -169,7 +169,7 @@ mount -t tmpfs tmpfs /run
 mount -t tmpfs tmpfs /tmp
 
 if [ ! -e /bin/java ]; then
-	ln -s /var/jvm/bin/java /bin/java
+	# ln -s /var/jvm/bin/java /bin/java
 fi
 
 export ENV=/etc/profile
@@ -251,7 +251,7 @@ mount -t tmpfs tmpfs /run
 mount -t tmpfs tmpfs /tmp
 
 if [ ! -e /bin/java ]; then
-	ln -s /var/jvm/bin/java /bin/java
+	# ln -s /var/jvm/bin/java /bin/java
 fi
 
 export ENV=/etc/profile

@@ -6,3 +6,4 @@ initramfs/bin/*
 upload_image.sh
 root.bin
 obsolete/
+busybox/*

@@ -5,4 +5,4 @@ qemu-system-x86_64 \
   -m 4G \
   -enable-kvm \
   -netdev user,id=net0 \
-  -device virtio-net-pci,netdev=net0 \
+  -device virtio-net-pci,netdev=net0

@@ -5,3 +5,4 @@ initramfs/bin/*
 *.fd
 upload_image.sh
 root.bin
+obsolete/
